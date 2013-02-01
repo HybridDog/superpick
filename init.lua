@@ -1,0 +1,30 @@
+--superpick[12.12.08]
+--Texture created with gimp
+
+minetest.register_on_punchnode(function(pos, node, puncher)
+	if puncher:get_wielded_item():get_name() == "superpick:pick"
+	and minetest.env: get_node(pos).name ~= "air" then
+		minetest.env:remove_node(pos)
+		puncher:get_inventory():add_item('main', node)
+	end
+end)
+
+minetest.register_tool("superpick:pick", {
+	description = "LX 113",
+	inventory_image = "superpick.png",
+	wield_scale = {x=2,y=2,z=2},
+	liquids_pointable = true,
+	tool_capabilities = {
+		full_punch_interval = 0,
+		max_drop_level=3,
+		groupcaps={
+			unbreakable={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+			fleshy = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+			choppy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+			bendy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+			cracky={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+			crumbly={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+			snappy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+		}
+	},
+})
