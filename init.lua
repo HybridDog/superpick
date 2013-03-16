@@ -28,3 +28,20 @@ minetest.register_tool("superpick:pick", {
 		}
 	},
 })
+
+minetest.register_on_punchnode(function(pos, node, puncher)
+	if puncher:get_wielded_item():get_name() == "superpick:info"
+	and minetest.env: get_node(pos).name ~= "air" then
+		local inf = node.name
+		print(inf)
+		minetest.chat_send_all(inf)
+	end
+end)
+
+minetest.register_tool("superpick:info", {
+	description = "i 114",
+	inventory_image = "superpick_info.png",
+	wield_scale = {x=2,y=2,z=2},
+	liquids_pointable = true,
+	tool_capabilities = {},
+})
