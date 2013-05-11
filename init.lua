@@ -5,7 +5,12 @@ minetest.register_on_punchnode(function(pos, node, puncher)
 	if puncher:get_wielded_item():get_name() == "superpick:pick"
 	and minetest.env: get_node(pos).name ~= "air" then
 		minetest.env:remove_node(pos)
-		puncher:get_inventory():add_item('main', node)
+		local inv = puncher:get_inventory()
+		if inv then
+			if not inv:contains_item("main", node) then
+				inv:add_item("main", node)
+			end
+		end
 	end
 end)
 
@@ -25,7 +30,8 @@ minetest.register_tool("superpick:pick", {
 			cracky={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 			crumbly={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 			snappy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-		}
+		},
+		damage_groups = {fleshy = 20},
 	},
 })
 
