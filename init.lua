@@ -38,9 +38,15 @@ minetest.register_tool("superpick:pick", {
 minetest.register_on_punchnode(function(pos, node, puncher)
 	if puncher:get_wielded_item():get_name() == "superpick:info"
 	and minetest.env: get_node(pos).name ~= "air" then
-		local inf = node.name
-		print(inf)
-		minetest.chat_send_all(inf)
+		local nam = node.name
+		local par = node.param2
+		if par == 0 then
+			i = nam
+		else
+			i = nam.." "..par
+		end
+		print("[superpick] "..i)
+		minetest.chat_send_all(i)
 	end
 end)
 
