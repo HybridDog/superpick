@@ -57,3 +57,4 @@ minetest.register_tool("superpick:info", {
 	liquids_pointable = true,
 	tool_capabilities = {},
 })
+print("[superpick] loaded")
