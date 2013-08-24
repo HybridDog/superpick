@@ -39,14 +39,24 @@ minetest.register_on_punchnode(function(pos, node, puncher)
 	if puncher:get_wielded_item():get_name() == "superpick:info"
 	and minetest.env: get_node(pos).name ~= "air" then
 		local nam = node.name
-		local par = node.param2
-		if par == 0 then
-			i = nam
+		local par1 = node.param1
+		local par2 = node.param2
+		if par1 == 0 then
+			a = " "
 		else
-			i = nam.." "..par
+			a = par1
 		end
-		print("[superpick] "..i)
-		minetest.chat_send_all(i)
+		if par2 == 0 then
+			b = ""
+		else
+			b = par2
+		end
+		local m = nam.." "..a.." "..b
+    	if puncher:get_player_control().sneak then
+			m = m..' '..dump(minetest.registered_nodes[nam])
+		end
+		print("[superpick] "..m)
+		minetest.chat_send_all(m)
 	end
 end)
 
@@ -57,4 +67,31 @@ minetest.register_tool("superpick:info", {
 	liquids_pointable = true,
 	tool_capabilities = {},
 })
+
+
+function cleaninventory(name)
+	if name == nil or name == "" then
+		return
+	end
+	minetest.env:get_player_by_name(name):
+		get_inventory():
+			set_list("main", {
+				[1] = "superpick:info",
+				[2] = "replacer:replacer",
+				[3] = "superpick:pick",
+			})
+	print("[superpick] "..name.." has cleaned his inventory.")
+	minetest.chat_send_player(name, 'Inventory Cleaned!')
+end
+
+if minetest.setting_getbool("creative_mode") then
+	minetest.register_chatcommand('cleaninv',{
+		description = 'Tidy up your inventory.',
+		params = "",
+		privs = {},
+		func = cleaninventory
+	})
+end
+
+
 print("[superpick] loaded")
