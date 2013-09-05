@@ -1,6 +1,3 @@
---superpick[12.12.08]
---Texture created with gimp
-
 minetest.register_on_punchnode(function(pos, node, puncher)
 	if puncher:get_wielded_item():get_name() == "superpick:pick"
 	and minetest.env: get_node(pos).name ~= "air" then
