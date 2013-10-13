@@ -2,4 +2,4 @@
 — Texture created with gimp
 
 TODO:
-— avoid 3 items in the inventory after /cleaninv
+— add this tool to the creative mod to allow using buttons...

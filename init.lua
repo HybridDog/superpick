@@ -1,7 +1,7 @@
 minetest.register_on_punchnode(function(pos, node, puncher)
 	if puncher:get_wielded_item():get_name() == "superpick:pick"
-	and minetest.env: get_node(pos).name ~= "air" then
-		minetest.env:remove_node(pos)
+	and minetest.get_node(pos).name ~= "air" then
+		minetest.remove_node(pos)
 		local inv = puncher:get_inventory()
 		if inv then
 			if not inv:contains_item("main", node) then
@@ -34,11 +34,12 @@ minetest.register_tool("superpick:pick", {
 
 minetest.register_on_punchnode(function(pos, node, puncher)
 	if puncher:get_wielded_item():get_name() == "superpick:info"
-	and minetest.env: get_node(pos).name ~= "air" then
+	and minetest.get_node(pos).name ~= "air" then
 		local nam = node.name
 		local par1 = node.param1
 		local par2 = node.param2
-		if par1 == 0 then
+		if par1 == 0
+		and par2 == 0 then
 			a = " "
 		else
 			a = par1
@@ -70,12 +71,12 @@ function cleaninventory(name)
 	if name == nil or name == "" then
 		return
 	end
-	minetest.env:get_player_by_name(name):
+	minetest.get_player_by_name(name):
 		get_inventory():
 			set_list("main", {
 				[1] = "superpick:info",
-				[2] = "replacer:replacer",
-				[3] = "superpick:pick",
+				--[2] = "replacer:replacer",
+				[2] = "superpick:pick",
 			})
 	print("[superpick] "..name.." has cleaned his inventory.")
 	minetest.chat_send_player(name, 'Inventory Cleaned!')
