@@ -76,8 +76,7 @@ if minetest.setting_getbool("creative_mode") then
 		minetest.get_player_by_name(name):
 			get_inventory():
 				set_list("main", {
-					[1] = "replacer:replacer",
-					[2] = "superpick:pick",
+					[1] = "superpick:pick",
 				})
 		print("[superpick] "..name.." has cleaned his inventory.")
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
