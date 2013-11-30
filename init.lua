@@ -1,5 +1,5 @@
 if minetest.setting_getbool("creative_mode") then
-	minetest.register_tool("superpick:pick", {
+	minetest.register_tool(":creative:pick", {
 		description = "LX 113",
 		inventory_image = "superpick.png",
 		wield_scale = {x=2,y=2,z=2},
@@ -51,12 +51,13 @@ if minetest.setting_getbool("creative_mode") then
 				m = m..' '..dump(minetest.registered_nodes[nam])
 			end
 			print("[superpick] "..m)
+			minetest.sound_play("superpick", {pos = pos, gain = 0.9, max_hear_distance = 10})
 			minetest.chat_send_player(pname, m)
 		end,
 	})
 
 	minetest.register_on_punchnode(function(pos, node, puncher)
-		if puncher:get_wielded_item():get_name() == "superpick:pick"
+		if puncher:get_wielded_item():get_name() == "creative:pick"
 		and node.name ~= "air" then
 			minetest.remove_node(pos)
 			local inv = puncher:get_inventory()
@@ -76,7 +77,7 @@ if minetest.setting_getbool("creative_mode") then
 		minetest.get_player_by_name(name):
 			get_inventory():
 				set_list("main", {
-					[1] = "superpick:pick",
+					[1] = "creative:pick",
 				})
 		print("[superpick] "..name.." has cleaned his inventory.")
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
