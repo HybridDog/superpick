@@ -1,4 +1,5 @@
 if minetest.setting_getbool("creative_mode") then
+	local load_time_start = os.clock()
 	minetest.register_tool(":creative:pick", {
 		description = "LX 113",
 		inventory_image = "superpick.png",
@@ -89,5 +90,5 @@ if minetest.setting_getbool("creative_mode") then
 		privs = {},
 		func = cleaninventory
 	})
-	print("[superpick] loaded")
+	print(string.format("[superpick] loaded after ca. %.2fs", os.clock() - load_time_start))
 end
