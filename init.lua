@@ -1,15 +1,26 @@
 if minetest.setting_getbool("creative_mode") then
 	local load_time_start = os.clock()
+
+	local function add_to_inv(puncher, node)
+		local inv = puncher:get_inventory()
+		if inv then
+			if not inv:contains_item("main", node) then
+				inv:add_item("main", node)
+			end
+		end
+	end
+
 	minetest.register_tool(":creative:pick", {
 		description = "LX 113",
 		inventory_image = "superpick.png",
 		wield_scale = {x=2,y=2,z=2},
 		liquids_pointable = true,
+		range = 14,
 		tool_capabilities = {
 			full_punch_interval = 0,
 			max_drop_level=3,
 			groupcaps={
-			unbreakable={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+				unbreakable={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				fleshy = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				choppy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				bendy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
@@ -30,6 +41,12 @@ if minetest.setting_getbool("creative_mode") then
 				minetest.chat_send_player(pname, "?")
 				return
 			end
+			local pcontrol = placer:get_player_control()
+			if pcontrol.down
+			and pcontrol.up then
+				add_to_inv(placer, node)
+				return
+			end
 			local nam = node.name
 			local par1 = node.param1
 			local par2 = node.param2
@@ -45,7 +62,6 @@ if minetest.setting_getbool("creative_mode") then
 				b = par2
 			end
 			local m = nam.." "..a.." "..b
-			local pcontrol = placer:get_player_control()
 			if pcontrol.sneak
 			and pcontrol.aux1
 			and not pcontrol.up then
@@ -60,13 +76,13 @@ if minetest.setting_getbool("creative_mode") then
 	minetest.register_on_punchnode(function(pos, node, puncher)
 		if puncher:get_wielded_item():get_name() == "creative:pick"
 		and node.name ~= "air" then
-			minetest.remove_node(pos)
-			local inv = puncher:get_inventory()
-			if inv then
-				if not inv:contains_item("main", node) then
-					inv:add_item("main", node)
+			minetest.after(0, function(pos)
+				if not minetest.get_node(pos).name == "air" then
+					print("[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
+					minetest.remove_node(pos)
 				end
-			end
+			end, pos)
+			add_to_inv(puncher, node)
 		end
 	end)
 
