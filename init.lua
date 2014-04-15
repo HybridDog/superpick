@@ -27,6 +27,7 @@ if minetest.setting_getbool("creative_mode") then
 				cracky={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				crumbly={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				snappy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+				level={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 			},
 			damage_groups = {fleshy = 20},
 		},
@@ -77,7 +78,7 @@ if minetest.setting_getbool("creative_mode") then
 		if puncher:get_wielded_item():get_name() == "creative:pick"
 		and node.name ~= "air" then
 			minetest.after(0, function(pos)
-				if not minetest.get_node(pos).name == "air" then
+				if minetest.get_node(pos).name ~= "air" then
 					print("[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
 					minetest.remove_node(pos)
 				end
