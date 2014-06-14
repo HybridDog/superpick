@@ -97,7 +97,7 @@ if minetest.setting_getbool("creative_mode") then
 				set_list("main", {
 					[1] = "creative:pick",
 				})
-		print("[superpick] "..name.." has cleaned his inventory.")
+		print("[superpick] "..name.." has cleaned his inventory at "..string.sub(assert(io.popen("date +'%H:%M'"):read("*a"), "failedd"), 1, -2))
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
 	end
 
