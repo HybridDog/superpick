@@ -77,12 +77,13 @@ if minetest.setting_getbool("creative_mode") then
 	minetest.register_on_punchnode(function(pos, node, puncher)
 		if puncher:get_wielded_item():get_name() == "creative:pick"
 		and node.name ~= "air" then
-			minetest.after(0.3, function(pos)
-				if minetest.get_node(pos).name ~= "air" then
+			minetest.after(0.3, function(pos, name)
+				if minetest.get_node(pos).name ~= "air"
+				and not minetest.is_protected(pos, name) then
 					print("[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
 					minetest.remove_node(pos)
 				end
-			end, pos)
+			end, pos, puncher:get_player_name())
 			add_to_inv(puncher, node)
 		end
 	end)
