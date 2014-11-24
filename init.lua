@@ -28,6 +28,8 @@ if minetest.setting_getbool("creative_mode") then
 				crumbly={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				snappy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 				level={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+				nether={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
+				oddly_breakable_by_hand={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
 			},
 			damage_groups = {fleshy = 20},
 		},
@@ -36,7 +38,7 @@ if minetest.setting_getbool("creative_mode") then
 				return
 			end
 			local pname = placer:get_player_name()
-			local pos = minetest.get_pointed_thing_position(pointed_thing, under)
+			local pos = minetest.get_pointed_thing_position(pointed_thing)
 			local node = minetest.get_node_or_nil(pos)
 			if not node then
 				minetest.chat_send_player(pname, "?")
@@ -51,6 +53,7 @@ if minetest.setting_getbool("creative_mode") then
 			local nam = node.name
 			local par1 = node.param1
 			local par2 = node.param2
+			local a,b
 			if par1 == 0
 			and par2 == 0 then
 				a = " "
