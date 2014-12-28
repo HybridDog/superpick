@@ -71,7 +71,7 @@ if minetest.setting_getbool("creative_mode") then
 			and not pcontrol.up then
 				m = m..' '..dump(minetest.registered_nodes[nam])
 			end
-			print("[superpick] "..m)
+			minetest.log("action", "[superpick] "..m)
 			minetest.sound_play("superpick", {pos = pos, gain = 0.9, max_hear_distance = 10})
 			minetest.chat_send_player(pname, m)
 		end,
@@ -83,7 +83,7 @@ if minetest.setting_getbool("creative_mode") then
 			minetest.after(0.3, function(pos, name)
 				if minetest.get_node(pos).name ~= "air"
 				and not minetest.is_protected(pos, name) then
-					print("[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
+					minetest.log("info", "[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
 					minetest.remove_node(pos)
 				end
 			end, pos, puncher:get_player_name())
@@ -101,7 +101,7 @@ if minetest.setting_getbool("creative_mode") then
 				set_list("main", {
 					[1] = "creative:pick",
 				})
-		print("[superpick] "..name.." has cleaned his inventory at "..string.sub(assert(io.popen("date +'%H:%M'"):read("*a"), "failedd"), 1, -2))
+		minetest.log("info", "[superpick] "..name.." has cleaned his inventory at "..string.sub(assert(io.popen("date +'%H:%M'"):read("*a"), "failedd"), 1, -2))
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
 	end
 
@@ -111,5 +111,5 @@ if minetest.setting_getbool("creative_mode") then
 		privs = {},
 		func = cleaninventory
 	})
-	print(string.format("[superpick] loaded after ca. %.2fs", os.clock() - load_time_start))
+	minetest.log("info", string.format("[superpick] loaded after ca. %.2fs", os.clock() - load_time_start))
 end
