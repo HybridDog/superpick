@@ -34,7 +34,8 @@ if minetest.setting_getbool("creative_mode") then
 			damage_groups = {fleshy = 20},
 		},
 		on_place = function(itemstack, placer, pointed_thing)
-			if( placer == nil or pointed_thing == nil) then
+			if not placer
+			or not pointed_thing then
 				return
 			end
 			local pname = placer:get_player_name()
@@ -50,30 +51,36 @@ if minetest.setting_getbool("creative_mode") then
 				add_to_inv(placer, node)
 				return
 			end
+			local infos = {
+				{"param1", node.param1},
+				{"param2", node.param2},
+				{"light", minetest.get_node_light(pos)},
+			}
 			local nam = node.name
-			local par1 = node.param1
-			local par2 = node.param2
-			local a,b
-			if par1 == 0
-			and par2 == 0 then
-				a = " "
-			else
-				a = par1
+			local data = minetest.registered_nodes[nam]
+			if not data then
+				table.insert(infos, 1, {"name", nam})
 			end
-			if par2 == 0 then
-				b = ""
-			else
-				b = par2
-			end
-			local m = nam.." "..a.." "..b
 			if pcontrol.sneak
 			and pcontrol.aux1
 			and not pcontrol.up then
-				m = m..' '..dump(minetest.registered_nodes[nam])
+				table.insert(infos, {"nodedata", dump(data)})
 			end
-			minetest.log("action", "[superpick] "..m)
+			local msg = ""
+			for _,i in ipairs(infos) do
+				local n,i = unpack(i)
+				if i ~= 0 then
+					msg = msg..n.."="..i..", "
+				end
+			end
 			minetest.sound_play("superpick", {pos = pos, gain = 0.9, max_hear_distance = 10})
-			minetest.chat_send_player(pname, m)
+			if msg == "" then
+				msg = data.description or nam
+			else
+				msg = string.sub(msg, 0, -3)
+			end
+			minetest.log("action", "[superpick] "..msg)
+			minetest.chat_send_player(pname, msg)
 		end,
 	})
 
@@ -101,7 +108,7 @@ if minetest.setting_getbool("creative_mode") then
 				set_list("main", {
 					[1] = "creative:pick",
 				})
-		minetest.log("info", "[superpick] "..name.." has cleaned his inventory at "..string.sub(assert(io.popen("date +'%H:%M'"):read("*a"), "failedd"), 1, -2))
+		minetest.log("info", "[superpick] "..name.." has cleaned his inventory")
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
 	end
 
