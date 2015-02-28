@@ -10,6 +10,16 @@ if minetest.setting_getbool("creative_mode") then
 		end
 	end
 
+	local supported_groups = {
+		"unbreakable", "immortal", "fleshy", "choppy", "bendy",
+		"cracky", "crumbly", "snappy", "level", "nether",
+		"oddly_breakable_by_hand", "not_in_creative_inventory"
+	}
+	local caps = {}
+	for _,i in pairs(supported_groups) do
+		caps[i] = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3}
+	end
+
 	minetest.register_tool(":creative:pick", {
 		description = "LX 113",
 		inventory_image = "superpick.png",
@@ -19,18 +29,7 @@ if minetest.setting_getbool("creative_mode") then
 		tool_capabilities = {
 			full_punch_interval = 0,
 			max_drop_level=3,
-			groupcaps={
-				unbreakable={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				fleshy = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				choppy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				bendy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				cracky={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				crumbly={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				snappy={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				level={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				nether={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-				oddly_breakable_by_hand={times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3},
-			},
+			groupcaps=caps,
 			damage_groups = {fleshy = 20},
 		},
 		on_place = function(itemstack, placer, pointed_thing)
