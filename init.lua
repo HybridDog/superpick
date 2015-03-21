@@ -102,11 +102,9 @@ if minetest.setting_getbool("creative_mode") then
 		or name == "" then
 			return
 		end
-		minetest.get_player_by_name(name):
-			get_inventory():
-				set_list("main", {
-					[1] = "creative:pick",
-				})
+		local inv = minetest.get_player_by_name(name):get_inventory()
+		local list = inv:get_list("main")
+		inv:set_list("main", {"creative:pick", list[2], list[3]})
 		minetest.log("info", "[superpick] "..name.." has cleaned his inventory")
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
 	end
