@@ -32,13 +32,13 @@ if minetest.setting_getbool("creative_mode") then
 			groupcaps=caps,
 			damage_groups = {fleshy = 20},
 		},
-		on_place = function(itemstack, placer, pointed_thing)
+		on_place = function(itemstack, placer, pt)
 			if not placer
-			or not pointed_thing then
+			or not pt then
 				return
 			end
 			local pname = placer:get_player_name()
-			local pos = minetest.get_pointed_thing_position(pointed_thing)
+			local pos = pt.under
 			local node = minetest.get_node_or_nil(pos)
 			if not node then
 				minetest.chat_send_player(pname, "?")
@@ -50,10 +50,15 @@ if minetest.setting_getbool("creative_mode") then
 				add_to_inv(placer, node)
 				return
 			end
+			local light = minetest.get_node_light(pos)
+			if not light
+			or light == 0 then
+				light = minetest.get_node_light(pt.above)
+			end
 			local infos = {
 				{"param1", node.param1},
 				{"param2", node.param2},
-				{"light", minetest.get_node_light(pos)},
+				{"light", light},
 			}
 			local nam = node.name
 			local data = minetest.registered_nodes[nam]
@@ -109,10 +114,10 @@ if minetest.setting_getbool("creative_mode") then
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
 	end
 
-	minetest.register_chatcommand('cleaninv',{
-		description = 'Tidy up your inventory.',
+	minetest.register_chatcommand("cleaninv",{
+		description = "Tidy up your inventory.",
 		params = "",
-		privs = {},
+		privs = {give=true},
 		func = cleaninventory
 	})
 	minetest.log("info", string.format("[superpick] loaded after ca. %.2fs", os.clock() - load_time_start))
