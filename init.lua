@@ -1,5 +1,12 @@
+local load_time_start = os.clock()
+
+local newhand = {
+	wield_image = "wield_dummy.png^[combine:16x16:2,2=wield_dummy.png:-52,-23=character.png^[transformfy",
+	wield_scale = {x=1.8,y=1,z=2.8},
+}
+
 if minetest.setting_getbool("creative_mode") then
-	local load_time_start = os.clock()
+	newhand.range = 14
 
 	local function add_to_inv(puncher, node)
 		local inv = puncher:get_inventory()
@@ -20,6 +27,67 @@ if minetest.setting_getbool("creative_mode") then
 		caps[i] = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3}
 	end
 
+	local function rc_info(_, player, pt)
+		if not player
+		or not pt
+		or player:get_wield_index() ~= 1 then
+			return
+		end
+		local pname = player:get_player_name()
+		if not minetest.check_player_privs(pname, {server=true}) then
+			return
+		end
+		local pos = pt.under
+		local node = minetest.get_node_or_nil(pos)
+		if not node then
+			minetest.chat_send_player(pname, "?")
+			return
+		end
+		local pcontrol = player:get_player_control()
+		if pcontrol.down
+		and pcontrol.up then
+			add_to_inv(player, node)
+			return
+		end
+		local light = minetest.get_node_light(pos)
+		if not light
+		or light == 0 then
+			light = minetest.get_node_light(pt.above)
+		end
+		local infos = {
+			{"param1", node.param1},
+			{"param2", node.param2},
+			{"light", light},
+		}
+		local nam = node.name
+		local data = minetest.registered_nodes[nam]
+		if not data then
+			table.insert(infos, 1, {"name", nam})
+		end
+		if pcontrol.sneak
+		and pcontrol.aux1
+		and not pcontrol.up then
+			table.insert(infos, {"nodedata", dump(data)})
+		end
+		local msg = ""
+		for _,i in ipairs(infos) do
+			local n,i = unpack(i)
+			if i ~= 0 then
+				msg = msg..n.."="..i..", "
+			end
+		end
+		minetest.sound_play("superpick", {pos = pos, gain = 0.4, max_hear_distance = 10})
+		if msg == "" then
+			msg = data.description or nam
+		else
+			msg = string.sub(msg, 0, -3)
+		end
+		minetest.log("action", "[superpick] "..msg)
+		minetest.chat_send_player(pname, msg)
+	end
+
+	--newhand.on_place = rc_info
+
 	minetest.register_tool(":creative:pick", {
 		description = "LX 113",
 		inventory_image = "superpick.png",
@@ -32,78 +100,36 @@ if minetest.setting_getbool("creative_mode") then
 			groupcaps=caps,
 			damage_groups = {fleshy = 20},
 		},
-		on_place = function(itemstack, placer, pt)
-			if not placer
-			or not pt then
-				return
-			end
-			local pname = placer:get_player_name()
-			local pos = pt.under
-			local node = minetest.get_node_or_nil(pos)
-			if not node then
-				minetest.chat_send_player(pname, "?")
-				return
-			end
-			local pcontrol = placer:get_player_control()
-			if pcontrol.down
-			and pcontrol.up then
-				add_to_inv(placer, node)
-				return
-			end
-			local light = minetest.get_node_light(pos)
-			if not light
-			or light == 0 then
-				light = minetest.get_node_light(pt.above)
-			end
-			local infos = {
-				{"param1", node.param1},
-				{"param2", node.param2},
-				{"light", light},
-			}
-			local nam = node.name
-			local data = minetest.registered_nodes[nam]
-			if not data then
-				table.insert(infos, 1, {"name", nam})
-			end
-			if pcontrol.sneak
-			and pcontrol.aux1
-			and not pcontrol.up then
-				table.insert(infos, {"nodedata", dump(data)})
-			end
-			local msg = ""
-			for _,i in ipairs(infos) do
-				local n,i = unpack(i)
-				if i ~= 0 then
-					msg = msg..n.."="..i..", "
-				end
-			end
-			minetest.sound_play("superpick", {pos = pos, gain = 0.9, max_hear_distance = 10})
-			if msg == "" then
-				msg = data.description or nam
-			else
-				msg = string.sub(msg, 0, -3)
-			end
-			minetest.log("action", "[superpick] "..msg)
-			minetest.chat_send_player(pname, msg)
-		end,
+		on_place = rc_info,
 	})
 
-	minetest.register_on_punchnode(function(pos, node, puncher)
-		if puncher:get_wielded_item():get_name() == "creative:pick"
-		and node.name ~= "air" then
-			minetest.after(0.3, function(pos, name)
-				if minetest.get_node(pos).name ~= "air"
-				and not minetest.is_protected(pos, name) then
-					minetest.log("info", "[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
-					minetest.remove_node(pos)
-				end
-			end, pos, puncher:get_player_name())
-			add_to_inv(puncher, node)
+	minetest.register_on_punchnode(function(pos, node, player)
+		if player:get_wield_index() ~= 1
+		or player:get_wielded_item():get_name() ~= "creative:pick"
+		or node.name == "air" then
+			return
 		end
+		local item = player:get_wielded_item():get_name()
+		if item ~= "creative:pick"
+		and item then
+			return
+		end
+		local pname = player:get_player_name()
+		if not minetest.check_player_privs(pname, {server=true}) then
+			return
+		end
+		minetest.after(0.3, function(pos, name)
+			if minetest.get_node(pos).name ~= "air"
+			and not minetest.is_protected(pos, name) then
+				minetest.log("info", "[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
+				minetest.remove_node(pos)
+			end
+		end, pos, pname)
+		add_to_inv(player, node)
 	end)
 
 	local function cleaninventory(name)
-		if name == nil
+		if not name
 		or name == "" then
 			return
 		end
@@ -120,5 +146,10 @@ if minetest.setting_getbool("creative_mode") then
 		privs = {give=true},
 		func = cleaninventory
 	})
-	minetest.log("info", string.format("[superpick] loaded after ca. %.2fs", os.clock() - load_time_start))
 end
+
+minetest.after(0, function(nh)
+	minetest.override_item("", nh)
+end, newhand)
+
+minetest.log("info", string.format("[superpick] loaded after ca. %.2fs", os.clock() - load_time_start))
