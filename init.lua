@@ -105,7 +105,7 @@ if minetest.setting_getbool("creative_mode") then
 
 	minetest.register_on_punchnode(function(pos, node, player)
 		if player:get_wield_index() ~= 1
-		or player:get_wielded_item():get_name() ~= "creative:pick"
+		or player:get_wielded_item():to_string() ~= "creative:pick"
 		or node.name == "air" then
 			return
 		end
