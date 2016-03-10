@@ -57,7 +57,7 @@ if minetest.setting_getbool("creative_mode") then
 		local infos = {
 			{"param1", node.param1},
 			{"param2", node.param2},
-			{"light", light},
+			{"light", light or 0},
 		}
 		local nam = node.name
 		local data = minetest.registered_nodes[nam]
@@ -67,7 +67,7 @@ if minetest.setting_getbool("creative_mode") then
 		if pcontrol.sneak
 		and pcontrol.aux1
 		and not pcontrol.up then
-			table.insert(infos, {"nodedata", dump(data)})
+			infos[#infos+1] = {"nodedata", dump(data)}
 		end
 		local msg = ""
 		for _,i in ipairs(infos) do
@@ -82,7 +82,7 @@ if minetest.setting_getbool("creative_mode") then
 		else
 			msg = string.sub(msg, 0, -3)
 		end
-		minetest.log("action", "[superpick] "..msg)
+		minetest.log("action", "[superpick] "..pname..": "..msg)
 		minetest.chat_send_player(pname, msg)
 	end
 
