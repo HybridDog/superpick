@@ -59,19 +59,55 @@ if minetest.setting_getbool("creative_mode") then
 			{"param2", node.param2},
 			{"light", light or 0},
 		}
+
+		-- nodename (if not shown by F5)
 		local nam = node.name
 		local data = minetest.registered_nodes[nam]
 		if not data then
 			table.insert(infos, 1, {"name", nam})
 		end
+
+		-- nodedef dump
 		if pcontrol.sneak
 		and pcontrol.aux1
 		and not pcontrol.up then
 			infos[#infos+1] = {"nodedata", dump(data)}
 		end
+
+		if pcontrol.left
+		and pcontrol.right then
+			if pcontrol.sneak then
+				-- node timer
+				local nt = minetest.get_node_timer(pos)
+				infos[#infos+1] = {"nodetimer",
+					"started:"..tostring(nt:is_started())..
+					",elapsed:"..tostring(nt:get_elapsed())..
+					",timeout:"..tostring(nt:get_timeout())
+				}
+			else
+				-- meta
+				local t = minetest.get_meta(pos):to_table()
+				local show
+				for i in pairs(t) do
+					if i ~= "inventory"
+					and i ~= "fields" then
+						show = true
+					end
+				end
+				if not show then
+					if next(t.inventory)
+					or next(t.fields) then
+						show = true
+					end
+				end
+				infos[#infos+1] = {"meta", show and dump(t) or "default"}
+			end
+		end
+
+		-- make msg and show it
 		local msg = ""
-		for _,i in ipairs(infos) do
-			local n,i = unpack(i)
+		for i = 1,#infos do
+			local n,i = unpack(infos[i])
 			if i ~= 0 then
 				msg = msg..n.."="..i..", "
 			end
