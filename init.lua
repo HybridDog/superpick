@@ -5,7 +5,7 @@ local newhand = {
 	wield_scale = {x=1.8,y=1,z=2.8},
 }
 
-if minetest.setting_getbool("creative_mode") then
+if minetest.setting_getbool"creative_mode" then
 	newhand.range = 14
 
 	local function add_to_inv(puncher, node)
@@ -17,13 +17,12 @@ if minetest.setting_getbool("creative_mode") then
 		end
 	end
 
-	local supported_groups = {
-		"unbreakable", "immortal", "fleshy", "choppy", "bendy",
-		"cracky", "crumbly", "snappy", "level", "nether",
-		"oddly_breakable_by_hand", "not_in_creative_inventory"
-	}
 	local caps = {}
-	for _,i in pairs(supported_groups) do
+	for _,i in pairs{
+		"unbreakable", "immortal", "fleshy", "choppy", "bendy", "cracky",
+		"crumbly", "snappy", "level", "nether", "oddly_breakable_by_hand",
+		"not_in_creative_inventory"
+	} do
 		caps[i] = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3}
 	end
 
@@ -170,7 +169,7 @@ if minetest.setting_getbool("creative_mode") then
 			return
 		end
 		local inv = minetest.get_player_by_name(name):get_inventory()
-		local list = inv:get_list("main")
+		local list = inv:get_list"main"
 		inv:set_list("main", {"creative:pick", list[2], list[3]})
 		minetest.log("info", "[superpick] "..name.." has cleaned his inventory")
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
