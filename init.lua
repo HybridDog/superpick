@@ -69,13 +69,14 @@ if minetest.setting_getbool"creative_mode" then
 		-- nodedef dump
 		if pcontrol.sneak
 		and pcontrol.aux1
-		and not pcontrol.up then
+		and not pcontrol.up
+		and not pcontrol.right then
 			infos[#infos+1] = {"nodedata", dump(data)}
 		end
 
 		if pcontrol.left
 		and pcontrol.right then
-			if pcontrol.sneak then
+			if pcontrol.aux1 then
 				-- node timer
 				local nt = minetest.get_node_timer(pos)
 				infos[#infos+1] = {"nodetimer",
