@@ -10,6 +10,8 @@ I made a tool which can dig every node very fast and show information about the 
 
 If you got ideas or found bugs, please tell them to me.
 
+[How to install a mod?](http://wiki.minetest.net/Installing_Mods)
+
 
 TODO:  
 — maybe allow other mods to make it give information
