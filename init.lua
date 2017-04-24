@@ -1,7 +1,8 @@
 local load_time_start = os.clock()
 
 local newhand = {
-	wield_image = "wield_dummy.png^[combine:16x16:2,2=wield_dummy.png:-52,-23=character.png^[transformfy",
+	wield_image = "wield_dummy.png^[combine:16x16:2,2=wield_dummy.png:-52,-2" ..
+		"3=character.png^[transformfy",
 	wield_scale = {x=1.8,y=1,z=2.8},
 }
 
@@ -17,13 +18,18 @@ if minetest.setting_getbool"creative_mode" then
 		end
 	end
 
+	local digging_delay = 0.15
 	local caps = {}
 	for _,i in pairs{
 		"unbreakable", "immortal", "fleshy", "choppy", "bendy", "cracky",
 		"crumbly", "snappy", "level", "nether", "oddly_breakable_by_hand",
 		"not_in_creative_inventory"
 	} do
-		caps[i] = {times={[1]=0, [2]=0, [3]=0}, uses=0, maxlevel=3}
+		caps[i] = {
+			times = {[1]=digging_delay, [2]=digging_delay, [3]=digging_delay},
+			uses = 0,
+			maxlevel = 3
+		}
 	end
 
 	local function rc_info(_, player, pt)
@@ -107,12 +113,13 @@ if minetest.setting_getbool"creative_mode" then
 		-- make msg and show it
 		local msg = ""
 		for i = 1,#infos do
-			local n,i = unpack(infos[i])
-			if i ~= 0 then
-				msg = msg..n.."="..i..", "
+			local n,v = unpack(infos[i])
+			if v ~= 0 then
+				msg = msg .. n .. "=" .. v .. ", "
 			end
 		end
-		minetest.sound_play("superpick", {pos = pos, gain = 0.4, max_hear_distance = 10})
+		minetest.sound_play("superpick",
+			{pos = pos, gain = 0.4, max_hear_distance = 10})
 		if msg == "" then
 			msg = data.description or nam
 		else
@@ -157,7 +164,8 @@ if minetest.setting_getbool"creative_mode" then
 		minetest.after(0.3, function(pos, name)
 			if minetest.get_node(pos).name ~= "air"
 			and not minetest.is_protected(pos, name) then
-				minetest.log("info", "[superpick] force destroying node at ("..pos.x.."|"..pos.y.."|"..pos.z..")")
+				minetest.log("info", "[superpick] force destroying node at (" ..
+					pos.x .. "|" .. pos.y .. "|" .. pos.z .. ")")
 				minetest.remove_node(pos)
 			end
 		end, pos, pname)
