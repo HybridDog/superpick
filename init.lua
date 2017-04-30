@@ -18,7 +18,6 @@ if minetest.setting_getbool"creative_mode" then
 		end
 	end
 
-	local digging_delay = 0.15
 	local caps = {}
 	for _,i in pairs{
 		"unbreakable", "immortal", "fleshy", "choppy", "bendy", "cracky",
@@ -26,7 +25,7 @@ if minetest.setting_getbool"creative_mode" then
 		"not_in_creative_inventory"
 	} do
 		caps[i] = {
-			times = {[1]=digging_delay, [2]=digging_delay, [3]=digging_delay},
+			times = {0, 0, 0},
 			uses = 0,
 			maxlevel = 3
 		}
