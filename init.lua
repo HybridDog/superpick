@@ -6,7 +6,7 @@ local newhand = {
 	wield_scale = {x=1.8,y=1,z=2.8},
 }
 
-if minetest.setting_getbool"creative_mode" then
+if minetest.settings:get_bool"creative_mode" then
 	newhand.range = 14
 
 	local function add_to_inv(puncher, node)
