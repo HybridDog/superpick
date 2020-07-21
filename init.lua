@@ -14,6 +14,8 @@ local function rightclick_info(player, pt)
 	end
 	local pname = player:get_player_name()
 	if not minetest.check_player_privs(pname, {server=true}) then
+		minetest.chat_send_player(pname,
+			"Usage of this tool requires the server privilege.")
 		return
 	end
 	local pos = pt.under
@@ -60,9 +62,9 @@ local function rightclick_info(player, pt)
 			-- node timer
 			local nt = minetest.get_node_timer(pos)
 			infos[#infos+1] = {"nodetimer",
-				"started:"..tostring(nt:is_started())..
-				",elapsed:"..tostring(nt:get_elapsed())..
-				",timeout:"..tostring(nt:get_timeout())
+				("started: %s, elapsed: %.5g, timeout: %.5g"):format(
+					tostring(nt:is_started()), nt:get_elapsed(),
+					nt:get_timeout())
 			}
 		else
 			-- meta
@@ -104,12 +106,14 @@ local function rightclick_info(player, pt)
 end
 
 minetest.register_on_punchnode(function(pos, node, player)
-	if player:get_wielded_item():get_name() ~= "creative:pick"
+	if player:get_wielded_item():get_name() ~= "superpick:tool"
 	or node.name == "air" then
 		return
 	end
 	local pname = player:get_player_name()
 	if not minetest.check_player_privs(pname, {server=true}) then
+		minetest.chat_send_player(pname,
+			"Usage of this tool requires the server privilege.")
 		return
 	end
 	minetest.after(0.1, function()
@@ -136,8 +140,8 @@ for _,i in pairs{
 	}
 end
 
-minetest.register_tool(":creative:pick", {
-	description = "LX 113",
+minetest.register_tool("superpick:tool", {
+	description = "Superpickaxe",
 	inventory_image = "superpick.png",
 	wield_scale = {x=2,y=2,z=2},
 	liquids_pointable = true,
@@ -168,20 +172,8 @@ minetest.register_chatcommand("cleaninv",{
 		end
 		local inv = minetest.get_player_by_name(name):get_inventory()
 		local list = inv:get_list"main"
-		inv:set_list("main", {"creative:pick", list[2], list[3]})
+		inv:set_list("main", {"superpick:tool", list[2], list[3]})
 		minetest.log("info", "[superpick] "..name.." has cleaned his inventory")
 		minetest.chat_send_player(name, 'Inventory Cleaned!')
 	end
 })
-
-
--- Change the wield hand
-
-minetest.after(0, function()
-	minetest.override_item("", {
-		wield_image = "wield_dummy.png^[combine:16x16:2,2=wield_dummy.png:" ..
-			"-52,-23=character.png^[transformfy",
-		wield_scale = {x=1.8,y=1,z=2.8},
-		range = 14,
-	})
-end)
